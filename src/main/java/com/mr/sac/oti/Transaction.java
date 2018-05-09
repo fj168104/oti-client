@@ -1,5 +1,6 @@
-package com.mr.sac.oti.bean;
+package com.mr.sac.oti;
 
+import com.mr.sac.oti.bean.Message;
 import com.mr.sac.oti.listen.Listener;
 import com.mr.sac.oti.pack.Parser;
 import com.mr.sac.oti.protocal.ProtocolAgent;

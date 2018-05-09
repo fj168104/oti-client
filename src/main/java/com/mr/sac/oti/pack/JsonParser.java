@@ -26,7 +26,8 @@ public class JsonParser implements Parser {
 
 	}
 
-	public void outputPackedString() {
+	public String  outputPackedString() {
 
+		return null;
 	}
 }

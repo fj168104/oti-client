@@ -1,14 +1,11 @@
-package com.mr.sac.oti.bean;
+package com.mr.sac.oti.comm;
 
-import com.mr.sac.oti.listen.Listener;
 import com.mr.sac.oti.pack.Parser;
-
-import java.util.List;
 
 /**
  * Created by feng on 18-5-6
  */
-public class DefaultClientTransaction extends ClientTransaction{
+public class DefaultClientTransaction extends ClientTransaction {
 
 	private Parser parser;
 
@@ -25,4 +22,5 @@ public class DefaultClientTransaction extends ClientTransaction{
 	public void setParser(Parser parser) {
 		this.parser = parser;
 	}
+
 }

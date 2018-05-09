@@ -1,10 +1,8 @@
-package com.mr.sac.oti.bean;
+package com.mr.sac.oti.comm;
 
 import com.mr.sac.oti.listen.Listener;
 import com.mr.sac.oti.listen.TransactionEvent;
 import com.mr.sac.oti.protocal.ProtocolAgent;
-
-import java.util.List;
 
 /**
  * Created by feng on 18-5-6

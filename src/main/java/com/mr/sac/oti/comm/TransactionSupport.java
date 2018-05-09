@@ -1,17 +1,18 @@
-package com.mr.sac.oti.bean;
+package com.mr.sac.oti.comm;
 
-import com.mr.sac.oti.Node;
-import com.mr.framework.core.clone.Cloneable;
+import com.mr.sac.oti.Dbable;
+import com.mr.sac.oti.Transaction;
+import com.mr.sac.oti.bean.Message;
 import com.mr.sac.oti.listen.Listener;
-import com.mr.sac.oti.protocal.ProtocolAgent;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by feng on 18-5-6
  */
-public abstract class TransactionSupport implements Transaction{
+public abstract class TransactionSupport implements Transaction, Dbable{
 
 	protected volatile int executeStatus = PREPARE;
 
@@ -22,6 +23,8 @@ public abstract class TransactionSupport implements Transaction{
 	protected Message requestMessage;
 
 	protected Message responseMessage;
+
+	protected DataSource dataSource;
 
 	public void setRequestMessage(Message message) {
 		requestMessage = message;
@@ -47,6 +50,10 @@ public abstract class TransactionSupport implements Transaction{
 	 */
 	public void addListener(Listener listener) {
 		listeners.add(listener);
+	}
+
+	public void setDataSource(DataSource dataSource){
+		this.dataSource = dataSource;
 	}
 
 }
