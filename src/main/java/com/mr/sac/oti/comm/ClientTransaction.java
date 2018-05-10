@@ -1,13 +1,23 @@
 package com.mr.sac.oti.comm;
 
+import com.mr.sac.oti.bean.Message;
 import com.mr.sac.oti.listen.Listener;
 import com.mr.sac.oti.listen.TransactionEvent;
+import com.mr.sac.oti.pack.Parser;
 import com.mr.sac.oti.protocal.ProtocolAgent;
 
 /**
  * Created by feng on 18-5-6
  */
-public abstract class ClientTransaction extends TransactionSupport {
+public class ClientTransaction extends TransactionSupport {
+
+	private Parser parser;
+
+	private ProtocolAgent protocolAgent;
+
+	public ClientTransaction(Message requestMessage, Message responseMessage) {
+		super(requestMessage, responseMessage);
+	}
 
 	public boolean communicate(ProtocolAgent agent) {
 		try {
@@ -33,11 +43,25 @@ public abstract class ClientTransaction extends TransactionSupport {
 		}
 	}
 
-	protected abstract String serializeRequestMessages();
+	protected String serializeRequestMessages() {
+		requestMessage.pack(parser);
+		return parser.outputPackedString();
+	}
 
-	protected abstract void deSerializeResponseMessages(String responseString);
+	protected void deSerializeResponseMessages(String responseString) {
+		responseMessage.unpack(responseString, parser);
+	}
 
-	private void setExecuteStatus(int executeStatus){
+	public void setParser(Parser parser) {
+		this.parser = parser;
+	}
+
+	@Override
+	public void setProtocolAgent(ProtocolAgent protocolagent) {
+		this.protocolAgent = protocolagent;
+	}
+
+	private void setExecuteStatus(int executeStatus) {
 		this.executeStatus = executeStatus;
 	}
 }

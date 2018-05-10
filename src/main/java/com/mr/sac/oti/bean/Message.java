@@ -3,6 +3,7 @@ package com.mr.sac.oti.bean;
 import com.mr.sac.oti.Node;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class Message implements Node, Cloneable {
 
 	private String description;
 
-	private List<Field> fields = new ArrayList<Field>();
+	private LinkedHashMap<String, Field> fieldMap = new LinkedHashMap<>();
 
 	public void pack(Parser parser) {
 		parser.packMessage(this);
@@ -32,18 +33,23 @@ public class Message implements Node, Cloneable {
 
 	@Override
 	public void fillValue(Map<String, Object> parameters) throws Exception {
-		for (Field field : fields) {
-			field.fillValue(parameters);
+		for (Map.Entry<String, Field> entry : fieldMap.entrySet()) {
+			entry.getValue().fillValue(parameters);
 		}
 	}
 
 	public Message clone() {
 		Message message = new Message();
-		message.id =id;
+		message.id = id;
 		message.description = description;
-		for (Field field : fields) {
-			message.fields.add(field.clone());
+		for (Map.Entry<String, Field> entry : fieldMap.entrySet()) {
+			message.fieldMap.put(entry.getKey(), entry.getValue().clone());
 		}
 		return message;
 	}
+
+	public Field getField(String fieldTag){
+		return fieldMap.get(fieldTag);
+	}
+
 }

@@ -7,11 +7,24 @@
     <groupId>com.mr.sac</groupId>
     <artifactId>oti-client</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <packaging>jar</packaging>
     <name>oti-client</name>
 
     <properties>
         <mr.framework.version>0.0.4</mr.framework.version>
+        <druid.version>1.1.7</druid.version>
     </properties>
 
     <dependencies>
@@ -19,6 +32,17 @@
             <groupId>com.mr.framework</groupId>
             <artifactId>tool-all</artifactId>
             <version>${mr.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.14.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

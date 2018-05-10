@@ -5,6 +5,8 @@ import com.mr.sac.oti.listen.Listener;
 import com.mr.sac.oti.pack.Parser;
 import com.mr.sac.oti.protocal.ProtocolAgent;
 
+import java.util.Map;
+
 /**
  * Created by feng on 18-5-7
  */
@@ -17,21 +19,31 @@ public interface Transaction {
 
 	boolean communicate(ProtocolAgent agent);
 
-	void setRequestMessage(Message message);
-
-	void setResponseMessage(Message message);
+	Message getResponseMessage();
 
 	/**
 	 * 0:成功
 	 * 1：失败
 	 * 2：执行中
+	 *
 	 * @return
 	 */
 	int getExecuteStatus();
 
-	String getExceptionMessage();
+	String getExceptionInfo();
 
 	void addListener(Listener listener);
 
+	/**
+	 * 加入外部参数
+	 * 1、解析字符串变量，如 #{param} type(Object) = String
+	 * 2、解析array类型的Message数组  type(Object) = List<Message>
+	 *
+	 * @param params
+	 */
+	void addParam(Map<String, Object> params);
+
 	void setParser(Parser parser);
+
+	void setProtocolAgent(ProtocolAgent protocolagent);
 }

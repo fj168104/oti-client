@@ -1,5 +1,6 @@
 package com.mr.sac.oti.comm;
 
+import com.mr.sac.oti.bean.Message;
 import com.mr.sac.oti.pack.Parser;
 
 /**
@@ -7,20 +8,11 @@ import com.mr.sac.oti.pack.Parser;
  */
 public class DefaultClientTransaction extends ClientTransaction {
 
-	private Parser parser;
 
-	protected String serializeRequestMessages() {
-		requestMessage.pack(parser);
-		return parser.outputPackedString();
+
+	public DefaultClientTransaction(Message requestMessage, Message responseMessage) {
+		super(requestMessage, responseMessage);
 	}
 
-	@Override
-	protected void deSerializeResponseMessages(String responseString) {
-		responseMessage.unpack(responseString, parser);
-	}
-
-	public void setParser(Parser parser) {
-		this.parser = parser;
-	}
 
 }

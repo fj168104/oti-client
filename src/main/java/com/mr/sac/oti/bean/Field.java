@@ -2,6 +2,10 @@ package com.mr.sac.oti.bean;
 
 import com.mr.framework.core.clone.Cloneable;
 import com.mr.framework.core.util.StrUtil;
+import com.mr.framework.db.DbUtil;
+import com.mr.framework.db.Entity;
+import com.mr.framework.db.handler.EntityListHandler;
+import com.mr.framework.db.sql.SqlExecutor;
 import com.mr.framework.log.Log;
 import com.mr.framework.log.LogFactory;
 import com.mr.sac.oti.Dbable;
@@ -13,6 +17,7 @@ import lombok.Setter;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +33,7 @@ public class Field implements Node, Cloneable, Dbable {
 	private static final String TABLE_BEGIN = "${";
 	private static final String REPLACE_END = "}";
 
-	Log log = LogFactory.get();
+	private static Log log = LogFactory.get();
 
 	private String fieldTag;
 	private String defaultValue = "";
@@ -66,6 +71,23 @@ public class Field implements Node, Cloneable, Dbable {
 		parser.unpackMessage(receivedData);
 	}
 
+	/**
+	 * 基本类型string int double设置方法：
+	 * 1：通过 <fieldTag, value> 直接赋值
+	 * 2：通过参数#{param}替换来设置值
+	 * <p>
+	 * object 设置方法：
+	 * 1：通过 <fieldTag, value> 直接赋值
+	 * 2：通过参数#{param}替换来设置包含的Field的值
+	 * <p>
+	 * array 设置方法：
+	 * 1：通过 <fieldTag, value> 直接赋值
+	 * 2：通过参数#{param}替换来设置包含的Field的值
+	 * 3: 通过tableField #{column}来替数据库匹配字段的值
+	 *
+	 * @param parameters
+	 * @throws Exception
+	 */
 	public void fillValue(Map<String, Object> parameters) throws Exception {
 		if (!Objects.isNull(parameters.get(fieldTag))) {
 			if (parameters.get(fieldTag) instanceof List) {
@@ -93,30 +115,7 @@ public class Field implements Node, Cloneable, Dbable {
 				objectMessage.fillValue(parameters);
 				break;
 			case 5:
-				selectSQL = replaceConstants(parameters, tableField);
-				log.debug("FieldTag={}, selectSQL={}", fieldTag, selectSQL);
-				if (StrUtil.isBlank(selectSQL)) return;
-				Connection connection = dataSource.getConnection();
-				Statement statement = connection.createStatement();
-				ResultSet rs = statement.executeQuery(selectSQL);
-				while (rs.next()) {
-					Message tableMessage = messageTemplete.clone();
-					for (Field field : tableMessage.getFields()) {
-						field.fillValue(parameters);
-						if (!Objects.isNull(field.value) && isTableReplace(String.valueOf(field.value))) {
-							String columnName = String.valueOf(field.value).replace(TABLE_BEGIN, "")
-									.replace(REPLACE_END, "");
-							if (dataType.equals(FieldDataType.FIELD_DATATYPE_STRING)) {
-								field.value = rs.getString(columnName);
-							} else if (dataType.equals(FieldDataType.FIELD_DATATYPE_INT)) {
-								field.value = rs.getInt(columnName);
-							} else if (dataType.equals(FieldDataType.FIELD_DATATYPE_DOUBLE)) {
-								field.value = rs.getDouble(columnName);
-							}
-						}
-					}
-					arrayMessage.add(tableMessage);
-				}
+				replaceTableFields(parameters);
 				break;
 			default:
 				break;
@@ -206,6 +205,41 @@ public class Field implements Node, Cloneable, Dbable {
 		@Override
 		public String toString() {
 			return this.name;
+		}
+	}
+
+	private void replaceTableFields(Map<String, Object> parameters) throws Exception {
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+
+			selectSQL = replaceConstants(parameters, tableField);
+			log.debug("FieldTag={}, selectSQL={}", fieldTag, selectSQL);
+			if (StrUtil.isBlank(selectSQL)) return;
+			List<Entity> entityList = SqlExecutor.query(conn, selectSQL, new EntityListHandler());
+			log.info("{}", entityList);
+			for(Entity entity : entityList) {
+				Message tableMessage = messageTemplete.clone();
+				for (Field field : tableMessage.getFieldMap().values()) {
+					field.fillValue(parameters);
+					if (!Objects.isNull(field.value) && isTableReplace(String.valueOf(field.value))) {
+						String columnName = String.valueOf(field.value).replace(TABLE_BEGIN, "")
+								.replace(REPLACE_END, "");
+						if (dataType.equals(FieldDataType.FIELD_DATATYPE_STRING)) {
+							field.value = entity.getStr(columnName);
+						} else if (dataType.equals(FieldDataType.FIELD_DATATYPE_INT)) {
+							field.value = entity.getInt(columnName);
+						} else if (dataType.equals(FieldDataType.FIELD_DATATYPE_DOUBLE)) {
+							field.value = entity.getDouble(columnName);
+						}
+					}
+				}
+				arrayMessage.add(tableMessage);
+			}
+		} catch (SQLException e) {
+			log.error("SQL error!");
+		} finally {
+			DbUtil.close(conn);
 		}
 	}
 
