@@ -1,6 +1,5 @@
 package com.mr.sac.oti.pack;
 
-import com.mr.sac.oti.bean.Field;
 import com.mr.sac.oti.bean.Message;
 
 /**
@@ -8,11 +7,7 @@ import com.mr.sac.oti.bean.Message;
  */
 public interface Parser {
 
-	void packField(Field field);
+	Object packMessage(Message message);
 
-	void packMessage(Message message);
-
-	void unpackMessage(String receivedMsg);
-
-	String outputPackedString();
+	void unpackMessage(Object receivedMsg, Message message);
 }

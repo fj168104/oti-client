@@ -5,5 +5,5 @@ package com.mr.sac.oti.protocal;
  */
 public interface ProtocolAgent {
 
-	String process(String mString);
+	String exchange(String mString);
 }

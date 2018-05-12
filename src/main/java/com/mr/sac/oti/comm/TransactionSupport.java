@@ -1,9 +1,11 @@
 package com.mr.sac.oti.comm;
 
-import com.mr.sac.oti.Dbable;
+import com.mr.sac.oti.OTIContainer;
 import com.mr.sac.oti.Transaction;
 import com.mr.sac.oti.bean.Message;
+import com.mr.sac.oti.biz.Handler;
 import com.mr.sac.oti.listen.Listener;
+import com.mr.sac.oti.protocal.ProtocolAgent;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -11,7 +13,7 @@ import java.util.*;
 /**
  * Created by feng on 18-5-6
  */
-public abstract class TransactionSupport implements Transaction, Dbable {
+public abstract class TransactionSupport implements Transaction {
 
 	protected volatile int executeStatus = PREPARE;
 
@@ -23,13 +25,31 @@ public abstract class TransactionSupport implements Transaction, Dbable {
 
 	protected Message responseMessage;
 
-	protected DataSource dataSource;
+	protected DataSource dataSource = OTIContainer.getDataSource();
 
-	protected Map<String, Object> params;
+	protected Map<String, Object> parameters;
 
 	public TransactionSupport(Message requestMessage, Message responsessMessage) {
 		this.requestMessage = requestMessage;
 		this.responseMessage = responseMessage;
+	}
+
+	/**
+	 * 客户端交互
+	 * @param agent
+	 * @return
+	 */
+	public boolean communicate(ProtocolAgent agent){
+		return false;
+	}
+
+	/**
+	 * 服务端交互
+	 * @param requestObj
+	 * @return
+	 */
+	public Object communicate(Object requestObj, Handler handler){
+		return null;
 	}
 
 	@Override
@@ -47,6 +67,10 @@ public abstract class TransactionSupport implements Transaction, Dbable {
 		return executeStatus;
 	}
 
+	@Override
+	public void setProtocolAgent(ProtocolAgent protocolagent) {
+
+	}
 	/**
 	 * 增加监听器,
 	 * 例如记录相关调用日志等等
@@ -57,12 +81,8 @@ public abstract class TransactionSupport implements Transaction, Dbable {
 		listeners.add(listener);
 	}
 
-	public void addParam(Map<String, Object> params) {
-		this.params = Collections.unmodifiableMap(params);
-	}
+	public void addParams(Map<String, Object> parameters) throws Exception{
+		this.parameters = Collections.unmodifiableMap(parameters);
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
 	}
-
 }

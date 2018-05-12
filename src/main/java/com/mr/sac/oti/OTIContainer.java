@@ -7,9 +7,9 @@ import com.mr.sac.oti.bean.Message;
 import com.mr.sac.oti.pack.Parser;
 import com.mr.sac.oti.protocal.ProtocolAgent;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Created by feng on 18-5-6
@@ -17,7 +17,9 @@ import java.util.Map;
 public abstract class OTIContainer {
 
 	private static String DEFAULT_CONTAINER_ClASSNAME = "com.mr.sac.oti.DefaultContainer";
+	protected static String DEFAULT_CONFIG_CENTER = "http://106.14.195.171:8086";
 
+	protected static String CONFIG_MESSAGE_URL_PREFIX = "/api/v1/oti_msg/";
 	private static String CONTAINER_ClASSNAME = DEFAULT_CONTAINER_ClASSNAME;
 
 	public final static int ROLE_SERVER = 0x0;
@@ -27,8 +29,12 @@ public abstract class OTIContainer {
 		CONTAINER_ClASSNAME = containerClass;
 	}
 
+	//SAC配置中心地址 http://[ip]:port
+	@Setter
+	protected String configCenterUrl = DEFAULT_CONFIG_CENTER;
+
 	@Getter
-	protected DataSource dataSource;
+	protected static DataSource dataSource;
 
 	/**
 	 * 实例化Container
@@ -51,7 +57,7 @@ public abstract class OTIContainer {
 	public abstract void loadRemoteConfiguration(String[] msgIds);
 
 	/**
-	 * 通过本地xml载入配置
+	 * 通过本地xml载入配置=
 	 *
 	 * @param file
 	 */
@@ -79,8 +85,20 @@ public abstract class OTIContainer {
 
 	/**
 	 * 本地配置文件载入
+	 * 例如：
+	 * ## 基本配置信息
+	 * # JDBC URL，根据不同的数据库，使用相应的JDBC连接字符串
+	 * url = jdbc:mysql://<host>:<port>/<database_name>
+	 * # 用户名，此处也可以使用 user 代替
+	 * username = 用户名
+	 * # 密码，此处也可以使用 pass 代替
+	 * password = 密码
+	 * # JDBC驱动名，可选（Hutool会自动识别）
+	 * driver = com.mysql.jdbc.Driver
 	 */
 	public abstract void initDataSource();
+
+	public abstract void initDataSource(DataSource dataSource);
 
 	/**
 	 * 创建 Field

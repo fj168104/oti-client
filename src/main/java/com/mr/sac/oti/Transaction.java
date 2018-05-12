@@ -1,6 +1,8 @@
 package com.mr.sac.oti;
 
 import com.mr.sac.oti.bean.Message;
+import com.mr.sac.oti.bean.Node;
+import com.mr.sac.oti.biz.Handler;
 import com.mr.sac.oti.listen.Listener;
 import com.mr.sac.oti.pack.Parser;
 import com.mr.sac.oti.protocal.ProtocolAgent;
@@ -19,6 +21,8 @@ public interface Transaction {
 
 	boolean communicate(ProtocolAgent agent);
 
+	Object communicate(Object requestObj, Handler handler);
+
 	Message getResponseMessage();
 
 	/**
@@ -32,16 +36,16 @@ public interface Transaction {
 
 	String getExceptionInfo();
 
-	void addListener(Listener listener);
-
 	/**
 	 * 加入外部参数
 	 * 1、解析字符串变量，如 #{param} type(Object) = String
 	 * 2、解析array类型的Message数组  type(Object) = List<Message>
 	 *
-	 * @param params
+	 * @param parameters
 	 */
-	void addParam(Map<String, Object> params);
+	void addParams(Map<String, Object> parameters) throws Exception;
+
+	void addListener(Listener listener);
 
 	void setParser(Parser parser);
 

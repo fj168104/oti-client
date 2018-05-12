@@ -8,27 +8,20 @@ import com.mr.framework.db.handler.EntityListHandler;
 import com.mr.framework.db.sql.SqlExecutor;
 import com.mr.framework.log.Log;
 import com.mr.framework.log.LogFactory;
-import com.mr.sac.oti.Dbable;
-import com.mr.sac.oti.Node;
-import com.mr.sac.oti.pack.Parser;
+import com.mr.sac.oti.DataType;
+import com.mr.sac.oti.OTIContainer;
 import lombok.Data;
-import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by feng on 18-5-6
  */
 @Data
-public class Field implements Node, Cloneable, Dbable {
+public class Field implements Node, Cloneable {
 	private static final String CONSTANT_BEGIN = "#{";
 	private static final String TABLE_BEGIN = "${";
 	private static final String REPLACE_END = "}";
@@ -60,16 +53,7 @@ public class Field implements Node, Cloneable, Dbable {
 	private List<Message> arrayMessage = new ArrayList<>();
 	private Message objectMessage;
 
-	@Setter
-	private DataSource dataSource;
-
-	public void pack(Parser parser) {
-		parser.packField(this);
-	}
-
-	public void unpack(String receivedData, Parser parser) {
-		parser.unpackMessage(receivedData);
-	}
+	private DataSource dataSource = OTIContainer.getDataSource();
 
 	/**
 	 * 基本类型string int double设置方法：
@@ -89,6 +73,7 @@ public class Field implements Node, Cloneable, Dbable {
 	 * @throws Exception
 	 */
 	public void fillValue(Map<String, Object> parameters) throws Exception {
+		if(Objects.isNull(parameters)) parameters = new LinkedHashMap<>();
 		if (!Objects.isNull(parameters.get(fieldTag))) {
 			if (parameters.get(fieldTag) instanceof List) {
 				arrayMessage = (List<Message>) parameters.get(fieldTag);
@@ -100,7 +85,7 @@ public class Field implements Node, Cloneable, Dbable {
 			return;
 		}
 
-		switch (FieldDataType.getCodeByName(fieldTag)) {
+		switch (DataType.getCodeByName(dataType)) {
 			case 1:
 				value = replaceConstants(parameters, defaultValue);
 				break;
@@ -174,40 +159,6 @@ public class Field implements Node, Cloneable, Dbable {
 		return cloneField;
 	}
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-
-	public static enum FieldDataType {
-		FIELD_DATATYPE_STRING(1, "string"),
-		FIELD_DATATYPE_INT(2, "int"),
-		FIELD_DATATYPE_DOUBLE(3, "double"),
-		FIELD_DATATYPE_OBJECT(4, "object"),
-		FIELD_DATATYPE_ARRAY(5, "array");
-
-		private int code;
-		private String name;
-
-		FieldDataType(int code, String name) {
-			this.code = code;
-			this.name = name;
-		}
-
-		public static int getCodeByName(String name) {
-			for (FieldDataType fieldDataType : FieldDataType.values()) {
-				if (fieldDataType.name.equals(name)) {
-					return fieldDataType.code;
-				}
-			}
-			return 1;
-		}
-
-		@Override
-		public String toString() {
-			return this.name;
-		}
-	}
-
 	private void replaceTableFields(Map<String, Object> parameters) throws Exception {
 		Connection conn = null;
 		try {
@@ -225,11 +176,11 @@ public class Field implements Node, Cloneable, Dbable {
 					if (!Objects.isNull(field.value) && isTableReplace(String.valueOf(field.value))) {
 						String columnName = String.valueOf(field.value).replace(TABLE_BEGIN, "")
 								.replace(REPLACE_END, "");
-						if (dataType.equals(FieldDataType.FIELD_DATATYPE_STRING)) {
+						if (dataType.equals(DataType.STRING)) {
 							field.value = entity.getStr(columnName);
-						} else if (dataType.equals(FieldDataType.FIELD_DATATYPE_INT)) {
+						} else if (dataType.equals(DataType.INT)) {
 							field.value = entity.getInt(columnName);
-						} else if (dataType.equals(FieldDataType.FIELD_DATATYPE_DOUBLE)) {
+						} else if (dataType.equals(DataType.DOUBLE)) {
 							field.value = entity.getDouble(columnName);
 						}
 					}

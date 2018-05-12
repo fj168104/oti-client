@@ -1,73 +1,65 @@
 package com.mr.sac.oti.comm;
 
-import com.mr.framework.core.collection.CollectionUtil;
 import com.mr.framework.log.Log;
 import com.mr.framework.log.LogFactory;
 import com.mr.sac.oti.bean.Message;
+import com.mr.sac.oti.biz.Handler;
 import com.mr.sac.oti.listen.Listener;
 import com.mr.sac.oti.listen.TransactionEvent;
 import com.mr.sac.oti.pack.Parser;
-import com.mr.sac.oti.protocal.ProtocolAgent;
 
 /**
  * Created by feng on 18-5-6
  */
-public class ClientTransaction extends TransactionSupport {
+public class ServerTransaction extends TransactionSupport {
 
 	private static Log log = LogFactory.get();
 
 	private Parser parser;
 
-	private ProtocolAgent protocolAgent;
-
-	public ClientTransaction(Message requestMessage, Message responseMessage) {
+	public ServerTransaction(Message requestMessage, Message responseMessage) {
 		super(requestMessage, responseMessage);
 	}
 
-	public boolean communicate(ProtocolAgent agent) {
-		if(CollectionUtil.isEmpty(parameters)){
-			log.warn("Repalced parameter is empty.");
-		}
+	public Object communicate(Object requestObj, Handler handler){
+
 		try {
 			setExecuteStatus(EXECUTING);
-			//填充赋值
-			requestMessage.fillValue(parameters);
-			String request = (String) serializeRequestMessages();
+			deSerializeRequestMessages(requestObj);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_SERIAL);
 			}
-			String result = agent.exchange(request);
+			//业务处理
+			parameters = handler.process(requestMessage);
+			//填充赋值
+			responseMessage.fillValue(parameters);
+			Object request = serializeResponseMessages();
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_DESERIAL);
 			}
-			deSerializeResponseMessages(result);
+
 			setExecuteStatus(SUCCESS);
-			return true;
+			return request;
 		} catch (Exception e) {
 			setExecuteStatus(FAIL);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_ERROR);
 			}
 			exceptionString = e.getMessage();
-			return false;
+			return exceptionString;
 		}
 	}
 
-	protected Object serializeRequestMessages() throws Exception {
-		return requestMessage.pack(parser);
+	protected Object serializeResponseMessages() throws Exception {
+		return responseMessage.pack(parser);
 	}
 
-	protected void deSerializeResponseMessages(Object responseString) {
-		responseMessage.unpack(responseString, parser);
+	protected void deSerializeRequestMessages(Object requestObj) {
+		requestMessage.unpack(requestObj, parser);
 	}
 
 	public void setParser(Parser parser) {
 		this.parser = parser;
-	}
-
-	@Override
-	public void setProtocolAgent(ProtocolAgent protocolagent) {
-		this.protocolAgent = protocolagent;
 	}
 
 	private void setExecuteStatus(int executeStatus) {
