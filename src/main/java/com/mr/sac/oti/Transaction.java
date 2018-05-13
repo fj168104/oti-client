@@ -19,7 +19,7 @@ public interface Transaction {
 	public static final int FAIL = 1;
 	public static final int EXECUTING = 2;
 
-	boolean communicate(ProtocolAgent agent);
+	boolean communicate(String endPoint, ProtocolAgent agent);
 
 	Object communicate(Object requestObj, Handler handler);
 

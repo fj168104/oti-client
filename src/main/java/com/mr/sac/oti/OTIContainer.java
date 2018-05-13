@@ -135,4 +135,28 @@ public abstract class OTIContainer {
 	public abstract Transaction newTransaction(String requestMessageId,
 											   String responseMessageId);
 
+	/**
+	 * 服务端Transaction
+	 *
+	 * @param requestMessageId
+	 * @param responseMessageId
+	 * @return
+	 */
+	public abstract Transaction newServiceTransaction(String requestMessageId,
+													  String responseMessageId);
+
+	/**
+	 * 服务端Transaction
+	 *
+	 * @param requestMessageId
+	 * @param responseMessageId
+	 * @param parser
+	 * @return
+	 */
+
+	public abstract Transaction newServiceTransaction(String requestMessageId,
+													  String responseMessageId,
+													  Parser parser);
+
+
 }

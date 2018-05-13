@@ -85,16 +85,27 @@ public abstract class BaseContainer extends OTIContainer {
 		return null;
 	}
 
+	public Transaction newServiceTransaction(String requestMessageId,
+											 String responseMessageId) {
+		return null;
+	}
+
+	public Transaction newServiceTransaction(String requestMessageId,
+											 String responseMessageId,
+											 Parser parser) {
+		return null;
+	}
+
 	protected void checkTransactionAble(String requestMessageId,
-										   String responseMessageId){
+										String responseMessageId) {
 		checkLoaded();
-		if(!messageMap.containsKey(requestMessageId) || !messageMap.containsKey(responseMessageId)){
+		if (!messageMap.containsKey(requestMessageId) || !messageMap.containsKey(responseMessageId)) {
 			throw new RuntimeException("requestMessageId or responseMessageId is not being loaded");
 		}
 	}
 
-	private void checkLoaded(){
-		if(!isLoad) {
+	private void checkLoaded() {
+		if (!isLoad) {
 			throw new RuntimeException("OTI config is not load.");
 		}
 	}

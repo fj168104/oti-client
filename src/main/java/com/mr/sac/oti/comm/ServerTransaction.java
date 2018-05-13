@@ -33,13 +33,13 @@ public class ServerTransaction extends TransactionSupport {
 			parameters = handler.process(requestMessage);
 			//填充赋值
 			responseMessage.fillValue(parameters);
-			Object request = serializeResponseMessages();
+			Object response = serializeResponseMessages();
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_DESERIAL);
 			}
 
 			setExecuteStatus(SUCCESS);
-			return request;
+			return response;
 		} catch (Exception e) {
 			setExecuteStatus(FAIL);
 			for (Listener listener : listeners) {

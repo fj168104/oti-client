@@ -5,5 +5,5 @@ package com.mr.sac.oti.protocal;
  */
 public interface ProtocolAgent {
 
-	String exchange(String mString);
+	Object exchange(String endPoint, Object mObject);
 }

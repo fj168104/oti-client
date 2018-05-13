@@ -1,6 +1,7 @@
 package com.mr.sac.oti;
 
 import com.mr.sac.oti.comm.ClientTransaction;
+import com.mr.sac.oti.comm.ServerTransaction;
 import com.mr.sac.oti.pack.JsonParser;
 import com.mr.sac.oti.pack.Parser;
 import com.mr.sac.oti.protocal.HttpAgent;
@@ -37,4 +38,21 @@ public class DefaultContainer extends BaseContainer {
 		transaction.setProtocolAgent(agent);
 		return transaction;
 	}
+
+	public Transaction newServiceTransaction(String requestMessageId,
+											 String responseMessageId) {
+		return newServiceTransaction(requestMessageId, responseMessageId, JSON_PARSER);
+	}
+
+	public Transaction newServiceTransaction(String requestMessageId,
+											 String responseMessageId,
+											 Parser parser) {
+		checkTransactionAble(requestMessageId, responseMessageId);
+		Transaction transaction = new ServerTransaction(
+				newMessage(requestMessageId),
+				newMessage(responseMessageId));
+		transaction.setParser(parser);
+		return transaction;
+	}
+
 }

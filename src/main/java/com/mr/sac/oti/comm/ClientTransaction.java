@@ -24,19 +24,21 @@ public class ClientTransaction extends TransactionSupport {
 		super(requestMessage, responseMessage);
 	}
 
-	public boolean communicate(ProtocolAgent agent) {
-		if(CollectionUtil.isEmpty(parameters)){
-			log.warn("Repalced parameter is empty.");
+	public boolean communicate(String endPoint, ProtocolAgent agent) {
+		if (CollectionUtil.isEmpty(parameters)) {
+			log.warn("Replaced parameter is empty.");
 		}
 		try {
 			setExecuteStatus(EXECUTING);
 			//填充赋值
 			requestMessage.fillValue(parameters);
-			String request = (String) serializeRequestMessages();
+			Object request = serializeRequestMessages();
+			log.debug("request message>>>\n {}", request);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_SERIAL);
 			}
-			String result = agent.exchange(request);
+			Object result = agent.exchange(endPoint, request);
+			log.debug("response message>>>\n {}", result);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_DESERIAL);
 			}
@@ -57,8 +59,8 @@ public class ClientTransaction extends TransactionSupport {
 		return requestMessage.pack(parser);
 	}
 
-	protected void deSerializeResponseMessages(Object responseString) {
-		responseMessage.unpack(responseString, parser);
+	protected void deSerializeResponseMessages(Object responseObj) {
+		responseMessage.unpack(responseObj, parser);
 	}
 
 	public void setParser(Parser parser) {
