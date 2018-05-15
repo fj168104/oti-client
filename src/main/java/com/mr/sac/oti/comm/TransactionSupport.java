@@ -36,11 +36,10 @@ public abstract class TransactionSupport implements Transaction {
 
 	/**
 	 * 客户端交互
-	 * @param agent
 	 * @param endPoint
 	 * @return
 	 */
-	public boolean communicate(String endPoint, ProtocolAgent agent){
+	public boolean communicate(String endPoint){
 		return false;
 	}
 

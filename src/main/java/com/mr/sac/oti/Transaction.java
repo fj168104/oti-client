@@ -19,8 +19,19 @@ public interface Transaction {
 	public static final int FAIL = 1;
 	public static final int EXECUTING = 2;
 
-	boolean communicate(String endPoint, ProtocolAgent agent);
+	/**
+	 * 客户端发起调用
+	 * @param endPoint
+	 * @return
+	 */
+	boolean communicate(String endPoint);
 
+	/**
+	 * 服务端接受消息并处理
+	 * @param requestObj
+	 * @param handler
+	 * @return
+	 */
 	Object communicate(Object requestObj, Handler handler);
 
 	Message getResponseMessage();

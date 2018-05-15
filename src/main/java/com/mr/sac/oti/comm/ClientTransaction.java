@@ -24,7 +24,7 @@ public class ClientTransaction extends TransactionSupport {
 		super(requestMessage, responseMessage);
 	}
 
-	public boolean communicate(String endPoint, ProtocolAgent agent) {
+	public boolean communicate(String endPoint) {
 		if (CollectionUtil.isEmpty(parameters)) {
 			log.warn("Replaced parameter is empty.");
 		}
@@ -37,7 +37,7 @@ public class ClientTransaction extends TransactionSupport {
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_SERIAL);
 			}
-			Object result = agent.exchange(endPoint, request);
+			Object result = protocolAgent.exchange(endPoint, request);
 			log.debug("response message>>>\n {}", result);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_DESERIAL);

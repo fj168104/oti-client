@@ -25,8 +25,8 @@ public class EmbedServer {
 	private Thread thread;
 	private static Log log = LogFactory.get();
 
-	public void start(final int port, boolean isDaemon) throws Exception {
-		JettyServer server = new JettyServer(port);
+	public void start(final int port, String requestMessageId, String responseMessageId, boolean isDaemon) throws Exception {
+		JettyServer server = new JettyServer(port, requestMessageId, responseMessageId);
 		thread = new Thread(server);
 		// daemon, service jvm, user thread leave >>> daemon leave >>> jvm leave
 		thread.setDaemon(isDaemon);
@@ -39,8 +39,8 @@ public class EmbedServer {
 	 * @param port
 	 * @throws Exception
 	 */
-	public void startDaemon(final int port) throws Exception {
-		start(port, false);
+	public void startNotDaemon(final int port, String requestMessageId, String responseMessageId) throws Exception {
+		start(port, requestMessageId, responseMessageId,false);
 	}
 
 	public void destroy() {
@@ -62,8 +62,12 @@ public class EmbedServer {
 		private static Log log = LogFactory.get();
 		private Server server = null;
 		private int port;
+		private String requestMessageId;
+		private String responseMessageId;
 
-		public JettyServer(int port) {
+		public JettyServer(int port, String requestMessageId, String responseMessageId) {
+			this.requestMessageId = requestMessageId;
+			this.responseMessageId = responseMessageId;
 			this.port = port;
 		}
 
@@ -73,7 +77,7 @@ public class EmbedServer {
 
 		public void run() {
 			server = new Server(port);
-			server.setHandler(new JettyHandler());
+			server.setHandler(new JettyHandler(requestMessageId, responseMessageId));
 
 			try {
 				server.start();
@@ -88,13 +92,14 @@ public class EmbedServer {
 
 	static class JettyHandler extends AbstractHandler {
 
-		private static String requestMessageId = "msg1";
-		private static String responseMessageId = "msg2";
+		private String requestMessageId;
+		private String responseMessageId;
 
 		private static Log log = LogFactory.get();
 
-		public JettyHandler() {
-
+		public JettyHandler(String requestMessageId, String responseMessageId) {
+			this.requestMessageId = requestMessageId;
+			this.responseMessageId = responseMessageId;
 		}
 
 		public void handle(String target,
@@ -122,6 +127,7 @@ public class EmbedServer {
 
 		/**
 		 * read bytes from http request
+		 *
 		 * @param request
 		 * @return
 		 * @throws IOException
@@ -148,14 +154,14 @@ public class EmbedServer {
 					throw e;
 				}
 			}
-			return new byte[] {};
+			return new byte[]{};
 		}
 	}
 
 	/**
 	 * oti业务处理类
 	 */
-	static class OtiHandler implements Handler{
+	static class OtiHandler implements Handler {
 
 		@Override
 		public Map<String, Object> process(Message message) {
@@ -163,9 +169,6 @@ public class EmbedServer {
 			return map;
 		}
 	}
-	public static void main(String[] args) throws Exception {
-		EmbedServer server = new EmbedServer();
-		server.startDaemon(9080);
-	}
+
 }
 
