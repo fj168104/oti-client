@@ -7,6 +7,70 @@
     <groupId>com.mr.sac</groupId>
     <artifactId>oti-client</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+    <name>oti-client</name>
+
+    <properties>
+        <mr.framework.version>0.0.4</mr.framework.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mr.framework</groupId>
+            <artifactId>tool-all</artifactId>
+            <version>${mr.framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-continuation</artifactId>
+            <version>9.4.2.v20170220</version>
+        </dependency>
+
+        <dependency>
+            <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.10.2</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.4.2.v20170220</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.2</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.2</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.14.6</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -19,32 +83,5 @@
             </plugin>
         </plugins>
     </build>
-    <packaging>jar</packaging>
-    <name>oti-client</name>
-
-    <properties>
-        <mr.framework.version>0.0.4</mr.framework.version>
-        <druid.version>1.1.7</druid.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.mr.framework</groupId>
-            <artifactId>tool-all</artifactId>
-            <version>${mr.framework.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.14.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>${druid.version}</version>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
-
 
 </project>
