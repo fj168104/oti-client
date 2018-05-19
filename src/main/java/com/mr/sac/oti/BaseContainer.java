@@ -79,6 +79,14 @@ public abstract class BaseContainer extends OTIContainer {
 	@Override
 	public Transaction newTransaction(String requestMessageId,
 									  String responseMessageId,
+									  Parser parser) {
+		return null;
+	}
+
+
+	@Override
+	public Transaction newTransaction(String requestMessageId,
+									  String responseMessageId,
 									  ProtocolAgent agent,
 									  Parser parser) {
 
@@ -182,7 +190,7 @@ public abstract class BaseContainer extends OTIContainer {
 				toField.setMessageTemplete(message);
 			} else {
 				if (toField.getDataType().equals(DataType.DOUBLE.name)) {
-					String[] lens = toField.getDataType().split(",");
+					String[] lens = field.get("Length", String.class).split(",");
 					toField.setLength(Integer.parseInt(lens[0]));
 					toField.setDecimalLength(Integer.parseInt(lens[1]));
 				} else {

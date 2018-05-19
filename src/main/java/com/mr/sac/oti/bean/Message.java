@@ -12,7 +12,7 @@ import lombok.Data;
  * Created by feng on 18-5-6
  */
 @Data
-public class Message implements Node, Packable,Cloneable {
+public class Message implements Node, Packable, Cloneable {
 
 	public static LinkedHashMap<String, Message> messageMap = new LinkedHashMap<>();
 
@@ -53,6 +53,11 @@ public class Message implements Node, Packable,Cloneable {
 
 	public Field getField(String fieldTag) {
 		return fieldMap.get(fieldTag);
+	}
+
+	@Override
+	public String toString() {
+		return "[" + id + ":" + fieldMap.toString() + "]";
 	}
 
 }

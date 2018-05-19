@@ -6,8 +6,6 @@ import com.mr.framework.json.JSONUtil;
 import com.mr.sac.oti.DataType;
 import com.mr.sac.oti.bean.Field;
 import com.mr.sac.oti.bean.Message;
-import org.omg.CORBA.INTERNAL;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -18,10 +16,10 @@ import java.util.Objects;
 public class JsonParser implements Parser {
 
 	public Object packMessage(Message message) {
-		return transFormMessageToMap(message).toString();
+		return transFormMessageToJson(message).toString();
 	}
-	
-	private JSONObject transFormMessageToMap(Message message) {
+
+	private JSONObject transFormMessageToJson(Message message) {
 		//打包前准备的消息Map
 		JSONObject jsonObject = JSONUtil.createObj();
 
@@ -50,11 +48,13 @@ public class JsonParser implements Parser {
 					jsonObject.put(fieldTag, Double.parseDouble(value));
 					break;
 				case 4:
-					jsonObject.put(fieldTag, transFormMessageToMap(field.getObjectMessage()));
+					jsonObject.put(fieldTag, transFormMessageToJson(field.getObjectMessage()));
 					break;
 				case 5:
+					JSONArray jsonArray = JSONUtil.createArray();
+					jsonObject.put(fieldTag, jsonArray);
 					for (Message mess : field.getArrayMessage()) {
-						jsonObject.put(fieldTag, transFormMessageToMap(mess));
+						jsonArray.add(transFormMessageToJson(mess));
 					}
 					break;
 				default:

@@ -4,8 +4,12 @@ import com.mr.framework.core.lang.Singleton;
 import com.mr.framework.setting.Setting;
 import com.mr.sac.oti.bean.Field;
 import com.mr.sac.oti.bean.Message;
+import com.mr.sac.oti.pack.JsonParser;
 import com.mr.sac.oti.pack.Parser;
+import com.mr.sac.oti.pack.XmlParser;
+import com.mr.sac.oti.protocal.HttpAgent;
 import com.mr.sac.oti.protocal.ProtocolAgent;
+import com.mr.sac.oti.protocal.TcpAgent;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,8 +26,12 @@ public abstract class OTIContainer {
 	protected static String CONFIG_MESSAGE_URL_PREFIX = "/api/v1/oti_msg/";
 	private static String CONTAINER_ClASSNAME = DEFAULT_CONTAINER_ClASSNAME;
 
-	public final static int ROLE_SERVER = 0x0;
-	public final static int ROLE_CLIENT = 0x1;
+	public final static Parser JSON_PARSER = new JsonParser();
+	public final static Parser XML_PARSER = new XmlParser();
+
+
+	public final static ProtocolAgent HTTP_AGENT = new HttpAgent();
+	public final static ProtocolAgent TCP_AGENT = new TcpAgent();
 
 	public static void setContainerClass(String containerClass) {
 		CONTAINER_ClASSNAME = containerClass;
@@ -131,6 +139,10 @@ public abstract class OTIContainer {
 	public abstract Transaction newTransaction(String requestMessageId,
 											   String responseMessageId,
 											   ProtocolAgent agent);
+
+	public abstract Transaction newTransaction(String requestMessageId,
+											   String responseMessageId,
+											   Parser parser);
 
 	public abstract Transaction newTransaction(String requestMessageId,
 											   String responseMessageId);

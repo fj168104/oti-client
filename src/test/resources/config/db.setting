@@ -8,7 +8,7 @@
 #----------------------------------------------------------------------------------------------------------------
 ## 基本配置信息
 # JDBC URL，根据不同的数据库，使用相应的JDBC连接字符串
-url = jdbc:mysql://47.100.7.81:3306/oti_test
+url = jdbc:mysql://47.100.7.81:3306/oti_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&allowMultiQueries=true
 # 用户名，此处也可以使用 user 代替
 username = root
 # 密码，此处也可以使用 pass 代替

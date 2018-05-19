@@ -73,7 +73,7 @@ public class Field implements Node, Cloneable {
 	 * @throws Exception
 	 */
 	public void fillValue(Map<String, Object> parameters) throws Exception {
-		if(Objects.isNull(parameters)) parameters = new LinkedHashMap<>();
+		if (Objects.isNull(parameters)) parameters = new LinkedHashMap<>();
 		if (!Objects.isNull(parameters.get(fieldTag))) {
 			if (parameters.get(fieldTag) instanceof List) {
 				arrayMessage = (List<Message>) parameters.get(fieldTag);
@@ -82,6 +82,12 @@ public class Field implements Node, Cloneable {
 			} else {
 				value = parameters.get(fieldTag);
 			}
+			return;
+		}
+
+		//数据库映射字段这里不处理
+		if(isTableReplace(defaultValue)) {
+			value = defaultValue;
 			return;
 		}
 
@@ -123,7 +129,7 @@ public class Field implements Node, Cloneable {
 	 */
 	private boolean isConstantReplace(String constant) {
 		if (StrUtil.isBlank(constant)) return false;
-		return constant.startsWith(CONSTANT_BEGIN) && constant.endsWith(REPLACE_END);
+		return constant.contains(CONSTANT_BEGIN) && constant.contains(REPLACE_END);
 
 	}
 
@@ -154,7 +160,9 @@ public class Field implements Node, Cloneable {
 
 		cloneField.tableField = tableField;
 
-		cloneField.messageTemplete = messageTemplete.clone();
+		if(!Objects.isNull(messageTemplete)){
+			cloneField.messageTemplete = messageTemplete.clone();
+		}
 
 		return cloneField;
 	}
@@ -169,20 +177,21 @@ public class Field implements Node, Cloneable {
 			if (StrUtil.isBlank(selectSQL)) return;
 			List<Entity> entityList = SqlExecutor.query(conn, selectSQL, new EntityListHandler());
 			log.info("{}", entityList);
-			for(Entity entity : entityList) {
+			for (Entity entity : entityList) {
 				Message tableMessage = messageTemplete.clone();
 				for (Field field : tableMessage.getFieldMap().values()) {
 					field.fillValue(parameters);
 					if (!Objects.isNull(field.value) && isTableReplace(String.valueOf(field.value))) {
 						String columnName = String.valueOf(field.value).replace(TABLE_BEGIN, "")
 								.replace(REPLACE_END, "");
-						if (dataType.equals(DataType.STRING)) {
+						if (field.dataType.equals(DataType.STRING.toString())) {
 							field.value = entity.getStr(columnName);
-						} else if (dataType.equals(DataType.INT)) {
+						} else if (field.dataType.equals(DataType.INT.toString())) {
 							field.value = entity.getInt(columnName);
-						} else if (dataType.equals(DataType.DOUBLE)) {
+						} else if (field.dataType.equals(DataType.DOUBLE.toString())) {
 							field.value = entity.getDouble(columnName);
 						}
+
 					}
 				}
 				arrayMessage.add(tableMessage);
@@ -194,4 +203,14 @@ public class Field implements Node, Cloneable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		if (dataType.equals(DataType.OBJECT)) {
+			return "[" + fieldTag + ":" + objectMessage + "]";
+		} else if (dataType.equals(DataType.ARRAY)) {
+			return "[" + fieldTag + ":" + Arrays.toString(arrayMessage.toArray()) + "]";
+		}else {
+			return "[" + fieldTag + ":" + value + "]";
+		}
+	}
 }

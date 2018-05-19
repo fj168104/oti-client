@@ -6,6 +6,7 @@ import com.mr.sac.oti.OTIContainer;
 import com.mr.sac.oti.Transaction;
 import com.mr.sac.oti.bean.Message;
 import com.mr.sac.oti.biz.Handler;
+import com.mr.sac.oti.pack.Parser;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -25,12 +26,17 @@ public class EmbedServer {
 	private Thread thread;
 	private static Log log = LogFactory.get();
 
-	public void start(final int port, String requestMessageId, String responseMessageId, boolean isDaemon) throws Exception {
+	public static Parser parser = OTIContainer.JSON_PARSER;
+
+	public void start(final int port, String requestMessageId,
+					  String responseMessageId,
+					  boolean isDaemon) throws Exception {
 		JettyServer server = new JettyServer(port, requestMessageId, responseMessageId);
 		thread = new Thread(server);
 		// daemon, service jvm, user thread leave >>> daemon leave >>> jvm leave
 		thread.setDaemon(isDaemon);
 		thread.start();
+		thread.join();
 	}
 
 	/**
@@ -40,7 +46,7 @@ public class EmbedServer {
 	 * @throws Exception
 	 */
 	public void startNotDaemon(final int port, String requestMessageId, String responseMessageId) throws Exception {
-		start(port, requestMessageId, responseMessageId,false);
+		start(port, requestMessageId, responseMessageId, false);
 	}
 
 	public void destroy() {
@@ -117,8 +123,7 @@ public class EmbedServer {
 //			log.info("received message >>>> {}" + new String(bytes,"UTF-8"));
 			String requestString = request.getParameter("request");
 			OTIContainer container = OTIContainer.getInstance();
-
-			Transaction transaction = container.newServiceTransaction(requestMessageId, responseMessageId);
+			Transaction transaction = container.newServiceTransaction(requestMessageId, responseMessageId, parser);
 			Object responseObj = transaction.communicate(requestString, new OtiHandler());
 			out.print(responseObj);
 			baseRequest.setHandled(true);

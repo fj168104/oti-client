@@ -29,7 +29,7 @@ public abstract class TransactionSupport implements Transaction {
 
 	protected Map<String, Object> parameters;
 
-	public TransactionSupport(Message requestMessage, Message responsessMessage) {
+	public TransactionSupport(Message requestMessage, Message responseMessage) {
 		this.requestMessage = requestMessage;
 		this.responseMessage = responseMessage;
 	}
