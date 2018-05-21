@@ -26,9 +26,10 @@ public abstract class OTIContainer {
 	protected static String CONFIG_MESSAGE_URL_PREFIX = "/api/v1/oti_msg/";
 	private static String CONTAINER_ClASSNAME = DEFAULT_CONTAINER_ClASSNAME;
 
+	private static String DEFAULT_XML_PATH = "config/oti_config.xml";
+
 	public final static Parser JSON_PARSER = new JsonParser();
 	public final static Parser XML_PARSER = new XmlParser();
-
 
 	public final static ProtocolAgent HTTP_AGENT = new HttpAgent();
 	public final static ProtocolAgent TCP_AGENT = new TcpAgent();
@@ -41,8 +42,12 @@ public abstract class OTIContainer {
 	@Setter
 	protected String configCenterUrl = DEFAULT_CONFIG_CENTER;
 
+	@Setter
+	public static String configXML = DEFAULT_XML_PATH;
+
+
 	@Getter
-	protected static DataSource dataSource;
+	public static DataSource dataSource;
 
 	/**
 	 * 实例化Container
@@ -101,7 +106,7 @@ public abstract class OTIContainer {
 	 * username = 用户名
 	 * # 密码，此处也可以使用 pass 代替
 	 * password = 密码
-	 * # JDBC驱动名，可选（Hutool会自动识别）
+	 * # JDBC驱动名，可选（mr-tool会自动识别）
 	 * driver = com.mysql.jdbc.Driver
 	 */
 	public abstract void initDataSource();

@@ -21,7 +21,9 @@ public class XmlParser implements Parser {
 	@Override
 	public Object packMessage(Message message) {
 		Document document = XmlUtil.createXml(message.getId());
-		transFormMessageToXML(document, document, message);
+		Element rootElement = XmlUtil.getRootElement(document);
+		transFormMessageToXML(document, rootElement, message);
+
 		return XmlUtil.toStr(document);
 
 	}
@@ -43,7 +45,7 @@ public class XmlParser implements Parser {
 					if (Objects.isNull(field.getValue())) continue;
 					value = String.valueOf(field.getValue());
 					//TODO length 处理
-					Node sTxtChild = document.createTextNode(fieldTag);
+					Node sTxtChild = document.createElement(fieldTag);
 					sTxtChild.setTextContent(value);
 					node.appendChild(sTxtChild);
 					break;
@@ -51,7 +53,7 @@ public class XmlParser implements Parser {
 					if (Objects.isNull(field.getValue())) continue;
 					value = String.valueOf(field.getValue());
 					//TODO length 处理
-					Node iTxtChild = document.createTextNode(fieldTag);
+					Node iTxtChild = document.createElement(fieldTag);
 					iTxtChild.setTextContent(value);
 					node.appendChild(iTxtChild);
 					break;
@@ -59,22 +61,21 @@ public class XmlParser implements Parser {
 					if (Objects.isNull(field.getValue())) continue;
 					value = String.valueOf(field.getValue());
 					//TODO length 处理
-					Node dTxtChild = document.createTextNode(fieldTag);
+					Node dTxtChild = document.createElement(fieldTag);
 					dTxtChild.setTextContent(value);
 					node.appendChild(dTxtChild);
 					break;
 				case 4:
 					Element oElement = document.createElement(fieldTag);
-					transFormMessageToXML(document, document.createElement(fieldTag), field.getObjectMessage());
+					transFormMessageToXML(document, oElement, field.getObjectMessage());
 					node.appendChild(oElement);
 					break;
 				case 5:
 					for (Message m : field.getArrayMessage()) {
 						Element element = document.createElement(fieldTag);
-						transFormMessageToXML(document, document.createElement(fieldTag), m);
+						transFormMessageToXML(document, element, m);
 						node.appendChild(element);
 					}
-					document.createElement(fieldTag);
 					break;
 				default:
 					break;
@@ -120,7 +121,7 @@ public class XmlParser implements Parser {
 					break;
 				case 5:
 					List<Element> arrElement = XmlUtil.getElements(element, fieldTag);
-					for(Element em : arrElement){
+					for (Element em : arrElement) {
 						Message msg = field.getMessageTemplete().clone();
 						transFormXMLToMessage(em, msg);
 						field.getArrayMessage().add(msg);

@@ -1,6 +1,7 @@
 package com.mr.sac.oti;
 
 import com.mr.framework.core.io.resource.NoResourceException;
+import com.mr.framework.core.util.XmlUtil;
 import com.mr.framework.db.ds.DSFactory;
 import com.mr.framework.http.HttpUtil;
 import com.mr.framework.json.JSONObject;
@@ -12,9 +13,12 @@ import com.mr.sac.oti.bean.Field;
 import com.mr.sac.oti.bean.Message;
 import com.mr.sac.oti.pack.Parser;
 import com.mr.sac.oti.protocal.ProtocolAgent;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -141,18 +145,30 @@ public abstract class BaseContainer extends OTIContainer {
 						for (String messageId : (String[]) object) {
 							Message message = new Message();
 							message.setId(messageId);
-							String messageUrl = DEFAULT_CONFIG_CENTER + CONFIG_MESSAGE_URL_PREFIX + messageId;
+							String messageUrl = configCenterUrl + CONFIG_MESSAGE_URL_PREFIX + messageId;
 							JSONObject joAll = JSONUtil.parseObj(HttpUtil.get(messageUrl));
 							JSONObject jsonObject = joAll.getJSONObject("message");
 							message.setDescription(jsonObject.get("Description", String.class));
 							if (!Objects.isNull(jsonObject.get("Encoding"))) {
 								message.setEncoding(jsonObject.get("Encoding", String.class));
 							}
-							message.setFieldMap(parseToFields(jsonObject.getJSONObject("Fields")));
+							message.setFieldMap(parseJsonToFields(jsonObject.getJSONObject("Fields")));
 							messageMap.put(messageId, message);
 						}
 					} else {
-						//TODO 解析 xml 配置
+						String config = (String)object;
+						Document docResult = XmlUtil.readXML(config);
+						Element elementDoc = XmlUtil.getRootElement(docResult);
+						Element messageList = XmlUtil.getElement(elementDoc, "MessageList");
+						List<Element> messageElements = XmlUtil.getElements(messageList, "Message");
+						for (Element element : messageElements) {
+							Message message = new Message();
+							message.setId(element.getAttribute("Id"));
+							message.setDescription(element.getAttribute("Description"));
+							message.setEncoding(element.getAttribute("CharSet"));
+							message.setFieldMap(parseXmlToFields(XmlUtil.getElements(element, "Field")));
+							messageMap.put(message.getId(), message);
+						}
 					}
 					isLoad = true;
 				}
@@ -167,7 +183,7 @@ public abstract class BaseContainer extends OTIContainer {
 	 * @param fieldObj
 	 * @return
 	 */
-	private LinkedHashMap<String, Field> parseToFields(JSONObject fieldObj) {
+	private LinkedHashMap<String, Field> parseJsonToFields(JSONObject fieldObj) {
 		LinkedHashMap<String, Field> fieldMap = new LinkedHashMap<>();
 		for (Map.Entry<String, Object> entry : fieldObj.entrySet()) {
 			Field toField = new Field();
@@ -186,7 +202,7 @@ public abstract class BaseContainer extends OTIContainer {
 				Message message = new Message();
 				message.setId(toField.getFieldTag());
 				message.setDescription(toField.getDescription());
-				message.setFieldMap(parseToFields(field.getJSONObject("Fields")));
+				message.setFieldMap(parseJsonToFields(field.getJSONObject("Fields")));
 				toField.setMessageTemplete(message);
 			} else {
 				if (toField.getDataType().equals(DataType.DOUBLE.name)) {
@@ -202,6 +218,50 @@ public abstract class BaseContainer extends OTIContainer {
 			}
 			fieldMap.put(toField.getFieldTag(), toField);
 		}
+		return fieldMap;
+	}
+
+	/**
+	 * 解析key=Fields
+	 *
+	 * @param fieldElements
+	 * @return
+	 */
+	private LinkedHashMap<String, Field> parseXmlToFields(List<Element> fieldElements) {
+		LinkedHashMap<String, Field> fieldMap = new LinkedHashMap<>();
+		for(Element fieldElement : fieldElements){
+			Field toField = new Field();
+			toField.setFieldTag(fieldElement.getAttribute("FieldTag"));
+			toField.setDescription(fieldElement.getAttribute("Description"));
+			toField.setDataType(fieldElement.getAttribute("DataType"));
+
+			if (toField.getDataType().equals(DataType.ARRAY.name)
+					|| toField.getDataType().equals(DataType.OBJECT.name)) {
+				if (!Objects.isNull(fieldElement.getAttribute("TableField"))) {
+					toField.setTableField(fieldElement.getAttribute("TableField"));
+				}
+				Message message = new Message();
+				message.setId(toField.getFieldTag());
+				message.setDescription(toField.getDescription());
+				Element sElement = XmlUtil.getElement(fieldElement, "Message");
+				List<Element> fElements = XmlUtil.getElements(sElement, "Field");
+				message.setFieldMap(parseXmlToFields(fElements));
+				toField.setMessageTemplete(message);
+			} else {
+				if (toField.getDataType().equals(DataType.DOUBLE.name)) {
+					String[] lens = fieldElement.getAttribute("Length").split(",");
+					toField.setLength(Integer.parseInt(lens[0]));
+					toField.setDecimalLength(Integer.parseInt(lens[1]));
+				} else {
+					toField.setLength(Integer.parseInt(fieldElement.getAttribute("Length")));
+				}
+
+				toField.setDefaultValue(fieldElement.getAttribute("DefaultValue"));
+				toField.setRequire("Y".equals(fieldElement.getAttribute("IsRequire")));
+			}
+			fieldMap.put(toField.getFieldTag(), toField);
+		}
+
 		return fieldMap;
 	}
 }

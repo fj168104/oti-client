@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<AppInstance>
+    <MessageList>
+        <Message Id="msg1" Description="消息1" CharSet="utf-8">
+            <Field FieldTag="col1" Description="字段1" DataType="string" Length="10" DefaultValue="#{param1}"
+                   IsRequire="Y"/>
+            <Field FieldTag="col2" Description="字段2" DataType="int" Length="12" DefaultValue="zhang" IsRequire="N"/>
+            <Field FieldTag="col3" Description="字段3" DataType="array" TableField="select * from t_user">
+                <Message>
+                    <Field FieldTag="col3-1" Description="数据库字段1" DataType="string" Length="9" DefaultValue="${dparam1}"
+                           IsRequire="N"/>
+                    <Field FieldTag="col3-3" Description="数据库字段2" DataType="int" Length="10" DefaultValue="${dparam2}"
+                           IsRequire="Y"/>
+                </Message>
+            </Field>
+        </Message>
+        <Message Id="demo_msg" Description="样例消息ID">
+            <Field FieldTag="arr-1" Description="数组message" DataType="array"
+                   TableField="select * from t_test where name= '#{name}'">
+                <Message>
+                    <Field FieldTag="dbcol1" Description="数据库字段1" DataType="string" Length="18" DefaultValue="${param1}"
+                           IsRequire="N"/>
+                    <Field FieldTag="dbcol2" Description="数据库字段2" DataType="int" Length="10" DefaultValue="${param2}"
+                           IsRequire="N"/>
+                    <Field FieldTag="obj-col1" Description="对象字段1" DataType="object">
+                        <Message>
+                            <Field FieldTag="col6" Description="字段6" DataType="string" Length="12"
+                                   DefaultValue="#{col6}" IsRequire="Y"/>
+                            <Field FieldTag="col7" Description="字段7" DataType="double" Length="18,2" DefaultValue="10.2"
+                                   IsRequire="N"/>
+                        </Message>
+                    </Field>
+                </Message>
+            </Field>
+            <Field FieldTag="obj-col2" Description="对象字段2" DataType="object">
+                <Message>
+                    <Field FieldTag="col8" Description="字段8" DataType="double" Length="14,2" DefaultValue="1.0"
+                           IsRequire="N"/>
+                    <Field FieldTag="col9" Description="字段9" DataType="int" Length="11" DefaultValue="#{colparam9}"
+                           IsRequire="Y"/>
+                </Message>
+            </Field>
+            <Field FieldTag="col10" Description="字段10" DataType="double" Length="18,2" DefaultValue="#{colparam10}"
+                   IsRequire="Y"/>
+        </Message>
+        <Message Id="msg2" Description="消息2" CharSet="utf-8">
+            <Field FieldTag="col1" Description="字段1" DataType="string" Length="20" DefaultValue="小鸟" IsRequire="N"/>
+            <Field FieldTag="col2" Description="字段2" DataType="int" Length="12" DefaultValue="1" IsRequire="N"/>
+        </Message>
+    </MessageList>
+</AppInstance>

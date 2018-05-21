@@ -4,21 +4,16 @@ import com.mr.framework.log.Log;
 import com.mr.framework.log.LogFactory;
 import com.mr.sac.oti.OTIContainer;
 import com.mr.sac.oti.Transaction;
-import com.mr.sac.oti.bean.Message;
-import com.mr.sac.oti.biz.Handler;
 import com.mr.sac.oti.pack.Parser;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class EmbedServer {
 
@@ -119,8 +114,7 @@ public class EmbedServer {
 			PrintWriter out = response.getWriter();
 
 			log.info("target >>> {}", target);
-//			byte[] bytes = readBytes(request);
-//			log.info("received message >>>> {}" + new String(bytes,"UTF-8"));
+
 			String requestString = request.getParameter("request");
 			OTIContainer container = OTIContainer.getInstance();
 			Transaction transaction = container.newServiceTransaction(requestMessageId, responseMessageId, parser);
@@ -160,18 +154,6 @@ public class EmbedServer {
 				}
 			}
 			return new byte[]{};
-		}
-	}
-
-	/**
-	 * oti业务处理类
-	 */
-	static class OtiHandler implements Handler {
-
-		@Override
-		public Map<String, Object> process(Message message) {
-			Map<String, Object> map = new LinkedHashMap<>();
-			return map;
 		}
 	}
 

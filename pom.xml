@@ -81,6 +81,28 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <!--
+                        生成的jar中，不要包含pom.xml和pom.properties这两个文件
+                    -->
+                        <addMavenDescriptor>false</addMavenDescriptor>
+
+                    </archive>
+                    <outputDirectory>${project.build.directory}/</outputDirectory>
+                    <includes>
+                        <!-- 打jar包时，只打包class文件 -->
+                        <include>**/*.class</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
