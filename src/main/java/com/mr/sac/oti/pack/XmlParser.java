@@ -65,6 +65,15 @@ public class XmlParser implements Parser {
 					dTxtChild.setTextContent(value);
 					node.appendChild(dTxtChild);
 					break;
+				case 6:
+					if (Objects.isNull(field.getValue())) continue;
+					value = String.valueOf(field.getValue());
+					//TODO length 处理
+					Node bTxtChild = document.createElement(fieldTag);
+					bTxtChild.setTextContent(value);
+					node.appendChild(bTxtChild);
+					break;
+
 				case 4:
 					Element oElement = document.createElement(fieldTag);
 					transFormMessageToXML(document, oElement, field.getObjectMessage());
@@ -115,6 +124,11 @@ public class XmlParser implements Parser {
 					value = String.valueOf(sElement.getTextContent());
 					field.setValue(value);
 					break;
+				case 6:
+					value = String.valueOf(sElement.getTextContent());
+					field.setValue(value);
+					break;
+
 				case 4:
 					field.setObjectMessage(field.getMessageTemplete().clone());
 					transFormXMLToMessage(sElement, field.getObjectMessage());

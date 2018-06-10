@@ -47,6 +47,13 @@ public class JsonParser implements Parser {
 					//TODO length 处理
 					jsonObject.put(fieldTag, Double.parseDouble(value));
 					break;
+				case 6:
+					if (Objects.isNull(field.getValue())) continue;
+					value = String.valueOf(field.getValue());
+					//TODO length 处理
+					jsonObject.put(fieldTag, Boolean.parseBoolean(value));
+					break;
+
 				case 4:
 					jsonObject.put(fieldTag, transFormMessageToJson(field.getObjectMessage()));
 					break;
@@ -95,6 +102,13 @@ public class JsonParser implements Parser {
 					//TODO length 处理
 					field.setValue(Double.parseDouble(value));
 					break;
+				case 6:
+					if (Objects.isNull(jsonObject.get(fieldTag))) continue;
+					value = String.valueOf(jsonObject.get(fieldTag));
+					//TODO length 处理
+					field.setValue(Boolean.parseBoolean(value));
+					break;
+
 				case 4:
 					field.setObjectMessage(field.getMessageTemplete().clone());
 					transFormJsonToMessage(jsonObject.getJSONObject(fieldTag), field.getObjectMessage());

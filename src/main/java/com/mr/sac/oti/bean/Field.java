@@ -101,6 +101,10 @@ public class Field implements Node, Cloneable {
 			case 3:
 				value = Double.parseDouble(replaceConstants(parameters, defaultValue));
 				break;
+			case 6:
+				value = Boolean.parseBoolean(replaceConstants(parameters, defaultValue));
+				break;
+
 			case 4:
 				objectMessage = messageTemplete.clone();
 				objectMessage.fillValue(parameters);
@@ -190,6 +194,8 @@ public class Field implements Node, Cloneable {
 							field.value = entity.getInt(columnName);
 						} else if (field.dataType.equals(DataType.DOUBLE.toString())) {
 							field.value = entity.getDouble(columnName);
+						}else if (field.dataType.equals(DataType.BOOL.toString())) {
+							field.value = entity.getBool(columnName);
 						}
 
 					}
@@ -205,12 +211,12 @@ public class Field implements Node, Cloneable {
 
 	@Override
 	public String toString() {
-		if (dataType.equals(DataType.OBJECT)) {
-			return "[" + fieldTag + ":" + objectMessage + "]";
-		} else if (dataType.equals(DataType.ARRAY)) {
-			return "[" + fieldTag + ":" + Arrays.toString(arrayMessage.toArray()) + "]";
+		if (dataType.equals(DataType.OBJECT.toString())) {
+			return "" + objectMessage;
+		} else if (dataType.equals(DataType.ARRAY.toString())) {
+			return Arrays.toString(arrayMessage.toArray());
 		}else {
-			return "[" + fieldTag + ":" + value + "]";
+			return value + "\n";
 		}
 	}
 }

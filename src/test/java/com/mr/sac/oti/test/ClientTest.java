@@ -6,6 +6,8 @@ import com.mr.framework.log.StaticLog;
 import com.mr.sac.oti.OTIContainer;
 import com.mr.sac.oti.Transaction;
 import com.mr.sac.oti.bean.Message;
+import com.mr.sac.oti.pack.JsonParser;
+import com.mr.sac.oti.protocal.HttpAgent;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -68,6 +70,39 @@ public class ClientTest {
 	}
 
 	/**
+	 * 客户端测试,自定义解析器
+	 * parser:JsonParser
+	 */
+	@Test
+	public void testCustomizedParser() throws Exception {
+		OTIContainer otiContainer = createOTIContainer();
+
+		//外部导入Parser（JsonParser）,可以自定义解析器
+		Transaction transaction = otiContainer.newTransaction("demo_msg",
+				"msg2",
+				new JsonParser());
+
+		action(transaction, endPoint);
+	}
+
+	/**
+	 * 客户端测试,自定义通信协议处理
+	 * ProtocolAgent:HttpAgent
+	 */
+	@Test
+	public void testCustomizedProtocolAgent() throws Exception {
+		OTIContainer otiContainer = createOTIContainer();
+
+		//外部导入Parser（JsonParser）,可以自定义解析器
+		Transaction transaction = otiContainer.newTransaction("demo_msg",
+				"msg2",
+				new HttpAgent());
+
+		action(transaction, endPoint);
+	}
+
+
+	/**
 	 * 客户端测试,socket 方式
 	 * Agent:ProtocolAgent
 	 */
@@ -128,6 +163,7 @@ public class ClientTest {
 		params.put("col6", "第6列");
 		params.put("colparam9", 5);
 		params.put("colparam10", 6.8);
+		params.put("col12", "字段12");
 
 		transaction.addParams(params);
 		if (transaction.communicate(endPoint)) {

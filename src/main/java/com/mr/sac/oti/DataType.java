@@ -8,7 +8,8 @@ public enum DataType {
 	INT(2, "int"),
 	DOUBLE(3, "double"),
 	OBJECT(4, "object"),
-	ARRAY(5, "array");
+	ARRAY(5, "array"),
+	BOOL(6, "bool");
 
 	public int code;
 	public String name;

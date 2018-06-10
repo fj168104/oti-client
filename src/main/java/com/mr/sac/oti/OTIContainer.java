@@ -40,7 +40,7 @@ public abstract class OTIContainer {
 
 	//SAC配置中心地址 http://[ip]:port
 	@Setter
-	protected String configCenterUrl = DEFAULT_CONFIG_CENTER;
+	public static String configCenterUrl = DEFAULT_CONFIG_CENTER;
 
 	@Setter
 	public static String configXML = DEFAULT_XML_PATH;

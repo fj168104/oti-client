@@ -57,7 +57,7 @@ public class Message implements Node, Packable, Cloneable {
 
 	@Override
 	public String toString() {
-		return "[" + id + ":" + fieldMap.toString() + "]";
+		return fieldMap.toString();
 	}
 
 }

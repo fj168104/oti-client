@@ -156,7 +156,7 @@ public abstract class BaseContainer extends OTIContainer {
 							messageMap.put(messageId, message);
 						}
 					} else {
-						String config = (String)object;
+						String config = (String) object;
 						Document docResult = XmlUtil.readXML(config);
 						Element elementDoc = XmlUtil.getRootElement(docResult);
 						Element messageList = XmlUtil.getElement(elementDoc, "MessageList");
@@ -191,13 +191,13 @@ public abstract class BaseContainer extends OTIContainer {
 			JSONObject field = (JSONObject) entry.getValue();
 			//init Field
 			toField.setFieldTag(fieldTag);
-			toField.setDescription(field.get("Description", String.class));
-			toField.setDataType(field.get("DataType", String.class));
+			toField.setDescription(field.getStr("Description", ""));
+			toField.setDataType(field.getStr("DataType", "string"));
 
-			if (field.get("DataType", String.class).equals(DataType.ARRAY.name)
-					|| field.get("DataType", String.class).equals(DataType.OBJECT.name)) {
+			if (field.getStr("DataType", "string").equals(DataType.ARRAY.name)
+					|| field.getStr("DataType", "string").equals(DataType.OBJECT.name)) {
 				if (!Objects.isNull(field.get("TableField"))) {
-					toField.setTableField(field.get("TableField", String.class));
+					toField.setTableField(field.getStr("TableField", ""));
 				}
 				Message message = new Message();
 				message.setId(toField.getFieldTag());
@@ -206,10 +206,10 @@ public abstract class BaseContainer extends OTIContainer {
 				toField.setMessageTemplete(message);
 			} else {
 				if (toField.getDataType().equals(DataType.DOUBLE.name)) {
-					String[] lens = field.get("Length", String.class).split(",");
+					String[] lens = field.getStr("Length", "0").split(",");
 					toField.setLength(Integer.parseInt(lens[0]));
 					toField.setDecimalLength(Integer.parseInt(lens[1]));
-				} else {
+				} else if (!toField.getDataType().equals(DataType.BOOL.name)) {
 					toField.setLength(field.get("Length", Integer.class));
 				}
 
@@ -229,7 +229,7 @@ public abstract class BaseContainer extends OTIContainer {
 	 */
 	private LinkedHashMap<String, Field> parseXmlToFields(List<Element> fieldElements) {
 		LinkedHashMap<String, Field> fieldMap = new LinkedHashMap<>();
-		for(Element fieldElement : fieldElements){
+		for (Element fieldElement : fieldElements) {
 			Field toField = new Field();
 			toField.setFieldTag(fieldElement.getAttribute("FieldTag"));
 			toField.setDescription(fieldElement.getAttribute("Description"));
