@@ -78,6 +78,7 @@ public class JsonParser implements Parser {
 	}
 
 	private void transFormJsonToMessage(JSONObject jsonObject, Message message) {
+		if(Objects.isNull(jsonObject)) return;
 		LinkedHashMap<String, Field> fieldMap = message.getFieldMap();
 		for (Map.Entry<String, Field> entry : fieldMap.entrySet()) {
 			String fieldTag = entry.getKey();
@@ -115,6 +116,7 @@ public class JsonParser implements Parser {
 					break;
 				case 5:
 					JSONArray jsonArray = jsonObject.getJSONArray(fieldTag);
+					if(Objects.isNull(jsonArray)) break;
 					for (int i = 0; i < jsonArray.size(); i++) {
 						Message msg = field.getMessageTemplete().clone();
 						field.getArrayMessage().add(msg);
