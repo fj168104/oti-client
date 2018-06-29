@@ -29,7 +29,7 @@ public class Field implements Node, Cloneable {
 	private static Log log = LogFactory.get();
 
 	private String fieldTag;
-	private String defaultValue = "";
+	private String defaultValue;
 	private String description;
 	//string int double object array
 	private String dataType;
@@ -150,7 +150,7 @@ public class Field implements Node, Cloneable {
 		Field cloneField = new Field();
 
 		cloneField.fieldTag = fieldTag;
-		cloneField.defaultValue = defaultValue;
+		cloneField.defaultValue = StrUtil.isNotEmpty(this.defaultValue) ? this.defaultValue : null;
 		cloneField.description = description;
 		cloneField.dataType = dataType;
 		cloneField.length = length;
