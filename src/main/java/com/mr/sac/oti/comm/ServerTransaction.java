@@ -24,8 +24,9 @@ public class ServerTransaction extends TransactionSupport {
 	public Object communicate(Object requestObj, Handler handler){
 
 		try {
+			this.requestObj = requestObj;
 			setExecuteStatus(EXECUTING);
-			deSerializeRequestMessages(requestObj);
+			deSerializeRequestMessages(this.requestObj);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_SERIAL);
 			}
@@ -34,6 +35,7 @@ public class ServerTransaction extends TransactionSupport {
 			//填充赋值
 			responseMessage.fillValue(parameters);
 			Object response = serializeResponseMessages();
+			this.requestObj = requestObj;
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_DESERIAL);
 			}

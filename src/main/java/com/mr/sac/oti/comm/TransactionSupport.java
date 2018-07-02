@@ -29,6 +29,11 @@ public abstract class TransactionSupport implements Transaction {
 
 	protected Map<String, Object> parameters;
 
+
+	protected Object requestObj;
+
+	protected Object responseObj;
+
 	public TransactionSupport(Message requestMessage, Message responseMessage) {
 		this.requestMessage = requestMessage;
 		this.responseMessage = responseMessage;
@@ -85,4 +90,13 @@ public abstract class TransactionSupport implements Transaction {
 		this.parameters = Collections.unmodifiableMap(parameters);
 
 	}
+
+	public Object getRequestObj() {
+		return requestObj;
+	}
+
+	public Object getResponseObj() {
+		return responseObj;
+	}
+
 }

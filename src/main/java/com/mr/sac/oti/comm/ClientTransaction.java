@@ -32,17 +32,17 @@ public class ClientTransaction extends TransactionSupport {
 			setExecuteStatus(EXECUTING);
 			//填充赋值
 			requestMessage.fillValue(parameters);
-			Object request = serializeRequestMessages();
-			log.debug("request message>>>\n {}", request);
+			requestObj = serializeRequestMessages();
+			log.debug("request message>>>\n {}", requestObj);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_SERIAL);
 			}
-			Object result = protocolAgent.exchange(endPoint, request);
-			log.debug("response message>>>\n {}", result);
+			responseObj = protocolAgent.exchange(endPoint, requestObj);
+			log.debug("response message>>>\n {}", responseObj);
 			for (Listener listener : listeners) {
 				listener.handle(this, TransactionEvent.EVENT_DESERIAL);
 			}
-			deSerializeResponseMessages(result);
+			deSerializeResponseMessages(responseObj);
 			setExecuteStatus(SUCCESS);
 			return true;
 		} catch (Exception e) {
