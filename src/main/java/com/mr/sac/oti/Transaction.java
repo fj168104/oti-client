@@ -61,4 +61,9 @@ public interface Transaction {
 	void setParser(Parser parser);
 
 	void setProtocolAgent(ProtocolAgent protocolagent);
+
+	Object getRequestObj();
+
+	Object getResponseObj();
+
 }
